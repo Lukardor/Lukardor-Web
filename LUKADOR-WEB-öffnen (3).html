@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUKADOR WEB</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #0F0F0F;
+        --card: #18181B;
+        --border: #27272A;
+        --text-primary: #FAFAFA;
+        --text-secondary: #A1A1AA;
+        --games: #3B82F6;
+        --ai: #10B981;
+        --music: #F59E0B;
+        --cut: #EC4899;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: var(--bg);
+        color: var(--text-primary);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .bg-grid {
+        background-image: 
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+    
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.15;
+        pointer-events: none;
+        animation: float 20s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+    
+    .card {
+        position: relative;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    
+    .card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    
+    .card:hover::after {
+        opacity: 1;
+    }
+    
+    .card:hover::before {
+        opacity: 1;
+    }
+    
+    .card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 
+            0 20px 40px -15px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(255,255,255,0.05);
+    }
+    
+    .card-games:hover {
+        box-shadow: 
+            0 20px 40px -15px rgba(59, 130, 246, 0.3),
+            0 0 60px -15px rgba(59, 130, 246, 0.2),
+            0 0 0 1px rgba(59, 130, 246, 0.3);
+    }
+    
+    .card-ai:hover {
+        box-shadow: 
+            0 20px 40px -15px rgba(16, 185, 129, 0.3),
+            0 0 60px -15px rgba(16, 185, 129, 0.2),
+            0 0 0 1px rgba(16, 185, 129, 0.3);
+    }
+    
+    .card-music:hover {
+        box-shadow: 
+            0 20px 40px -15px rgba(245, 158, 11, 0.3),
+            0 0 60px -15px rgba(245, 158, 11, 0.2),
+            0 0 0 1px rgba(245, 158, 11, 0.3);
+    }
+    
+    .card-cut:hover {
+        box-shadow: 
+            0 20px 40px -15px rgba(236, 72, 153, 0.3),
+            0 0 60px -15px rgba(236, 72, 153, 0.2),
+            0 0 0 1px rgba(236, 72, 153, 0.3);
+    }
+    
+    .card-gradient {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        border-radius: 20px;
+    }
+    
+    .card:hover .card-gradient {
+        opacity: 0.1;
+    }
+    
+    .games-gradient {
+        background: radial-gradient(circle at top right, var(--games), transparent 70%);
+    }
+    
+    .ai-gradient {
+        background: radial-gradient(circle at top right, var(--ai), transparent 70%);
+    }
+    
+    .music-gradient {
+        background: radial-gradient(circle at top right, var(--music), transparent 70%);
+    }
+    
+    .cut-gradient {
+        background: radial-gradient(circle at top right, var(--cut), transparent 70%);
+    }
+    
+    .icon-wrap {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .card:hover .icon-wrap {
+        transform: scale(1.1) translateY(-4px);
+    }
+    
+    .coming-soon {
+        opacity: 0;
+        transform: translateY(4px);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover .coming-soon {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .nav-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .nav-dot.active {
+        width: 24px;
+        border-radius: 4px;
+        background: var(--text-primary);
+    }
+    
+    @media (max-width: 640px) {
+        .card:hover {
+            transform: translateY(-4px);
+        }
+    }
+</style>
+</head>
+<body class="min-h-screen relative">
+<!-- Background Grid -->
+<div class="fixed inset-0 bg-grid opacity-40"></div>
+
+<!-- Floating Glow Orbs -->
+<div class="glow-orb w-96 h-96 bg-blue-500" style="top: 10%; left: 5%; animation-delay: 0s;"></div>
+<div class="glow-orb w-96 h-96 bg-emerald-500" style="top: 60%; right: 10%; animation-delay: -5s;"></div>
+<div class="glow-orb w-96 h-96 bg-pink-500" style="bottom: 10%; left: 30%; animation-delay: -10s;"></div>
+
+<div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24">
+    <!-- Header -->
+    <header class="text-center mb-16 md:mb-24">
+        <div class="inline-flex items-center justify-center mb-6">
+            <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-[2px]">
+                <div class="w-full h-full bg-[var(--bg)] rounded-xl flex items-center justify-center">
+                    <span class="text-xl md:text-2xl font-bold bg-gradient-to-br from-blue-400 to-pink-400 bg-clip-text text-transparent">L</span>
+                </div>
+            </div>
+        </div>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4">
+            <span class="bg-gradient-to-br from-zinc-100 to-zinc-400 bg-clip-text text-transparent">LUKADOR WEB</span>
+        </h1>
+        <p class="text-base md:text-lg text-[var(--text-secondary)] font-light max-w-xl mx-auto">
+            Your gateway to games, creativity, and AI-powered tools
+        </p>
+        
+        <!-- Nav Dots -->
+        <div class="flex items-center justify-center gap-2 mt-8">
+            <div class="nav-dot active"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+        </div>
+    </header>
+
+    <!-- Main Cards Grid -->
+    <main class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+            
+            <!-- Card 1: GAMES -->
+            <a href="https://lukardor.github.io/Lukardor-Games/" target="_blank" rel="noopener noreferrer" 
+               class="card card-games group block p-8 md:p-10 min-h-[300px] md:min-h-[340px] flex flex-col">
+                <div class="card-gradient games-gradient"></div>
+                
+                <div class="relative z-10 flex-1 flex flex-col">
+                    <div class="icon-wrap mb-6 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center border border-blue-500/20">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12h4m2 0h4m-6 4v-4m0-4v-4M7 21h10c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2z"/>
+                            <circle cx="17" cy="9" r="1" fill="currentColor"/>
+                            <circle cx="19" cy="12" r="1" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight">GAMES</h2>
+                    <p class="text-[var(--text-secondary)] text-sm md:text-base leading-relaxed flex-1">
+                        Play and discover amazing browser games built with modern web tech
+                    </p>
+                    
+                    <div class="mt-6 flex items-center text-sm font-medium text-blue-400">
+                        <span>Open App</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2: AI -->
+            <a href="https://lukardor.github.io/Lukardor-AI/" target="_blank" rel="noopener noreferrer"
+               class="card card-ai group block p-8 md:p-10 min-h-[300px] md:min-h-[340px] flex flex-col">
+                <div class="card-gradient ai-gradient"></div>
+                
+                <div class="relative z-10 flex-1 flex flex-col">
+                    <div class="icon-wrap mb-6 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center border border-emerald-500/20">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 0 00-6.23-.693L4.2 15.3M19.8 15.3v4.5c0 1.24-1.01 2.25-2.25 2.25H6.45c-1.24 0-2.25-1.01-2.25-2.25v-4.5m15.6 0a2.25 0 00-2.25-2.25H6.45a2.25 0 00-2.25 2.25m15.6 0H4.2"/>
+                            <circle cx="12" cy="8" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight">AI</h2>
+                    <p class="text-[var(--text-secondary)] text-sm md:text-base leading-relaxed flex-1">
+                        Explore AI-powered tools and experiments for creativity and productivity
+                    </p>
+                    
+                    <div class="mt-6 flex items-center text-sm font-medium text-emerald-400">
+                        <span>Open App</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 3: MUSIC -->
+            <a href="https://lukardor.github.io/Lukardor-Music/" target="_blank" rel="noopener noreferrer"
+               class="card card-music group block p-8 md:p-10 min-h-[300px] md:min-h-[340px] flex flex-col">
+                <div class="card-gradient music-gradient"></div>
+                
+                <div class="relative z-10 flex-1 flex flex-col">
+                    <div class="icon-wrap mb-6 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center border border-amber-500/20">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight">MUSIC</h2>
+                    <p class="text-[var(--text-secondary)] text-sm md:text-base leading-relaxed flex-1">
+                        Create, mix, and share beats with our music production tools
+                    </p>
+                    
+                    <div class="mt-6 flex items-center text-sm font-medium text-amber-400">
+                        <span>Open App</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4: CUT -->
+            <a href="https://lukardor.github.io/Lukardor-Cut/" target="_blank" rel="noopener noreferrer"
+               class="card card-cut group block p-8 md:p-10 min-h-[300px] md:min-h-[340px] flex flex-col">
+                <div class="card-gradient cut-gradient"></div>
+                
+                <div class="relative z-10 flex-1 flex flex-col">
+                    <div class="icon-wrap mb-6 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-pink-500/20 to-pink-600/10 flex items-center justify-center border border-pink-500/20">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-pink-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="6" cy="6" r="3"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight">CUT</h2>
+                    <p class="text-[var(--text-secondary)] text-sm md:text-base leading-relaxed flex-1">
+                        Professional video editing tools right in your browser, no install needed
+                    </p>
+                    
+                    <div class="mt-6 flex items-center text-sm font-medium text-pink-400">
+                        <span>Open App</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center mt-20 md:mt-32">
+        <div class="inline-flex items-center gap-4 mb-6 px-6 py-3 rounded-full bg-[var(--card)] border border-[var(--border)]">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-sm text-[var(--text-secondary)]">All systems operational</span>
+        </div>
+        <p class="text-sm text-[var(--text-secondary)]">© 2024 LUKADOR WEB. Built for creators.</p>
+    </footer>
+</div>
+
+<script>
+    // Mouse tracking for card glow effect
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
+    // Animate nav dots based on scroll
+    const dots = document.querySelectorAll('.nav-dot');
+    let currentDot = 0;
+    
+    window.addEventListener('scroll', () => {
+        const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        const newDot = Math.min(Math.floor(scrollPercent * dots.length), dots.length - 1);
+        
+        if (newDot !== currentDot) {
+            dots[currentDot].classList.remove('active');
+            dots[newDot].classList.add('active');
+            currentDot = newDot;
+        }
+    });
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>
